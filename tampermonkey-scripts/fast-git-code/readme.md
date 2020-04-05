@@ -1,4 +1,4 @@
-[**回到首页**](../../readme.md)
+[**回到首页**](https://github.com/holleworldabc/mini-tools/)
 
 ### FastGitCode
 

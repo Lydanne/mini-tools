@@ -4,11 +4,13 @@
 
 ## 快速通道
 
-### [fast-git-code(Tampermonkey)](./tampermonkey-scripts/fast-git-code/readme.md)
+### [1-fast-git-code(Tampermonkey)](./tampermonkey-scripts/fast-git-code/)
 
 > 一个快速查看Git源码的Tampermonkey插件
 
+### [2-jianshu-dir(Tampermonkey)](./tampermonkey-script/jianshu-dir/)
 
+> 一个生成简书目录的插件
 
 ## 关于
 
