@@ -1,4 +1,4 @@
-// ==UserScript==
+﻿// ==UserScript==
 // @name         jianshu-dir-tree
 // @name:zh      简书目录树
 // @name:en      jianshu-dir-tree
@@ -6,10 +6,11 @@
 // @homepageURL  https://github.com/holleworldabc/mini-tools.git
 // @version      1.0.0
 // @description  简书的目录
+// @description:en JIANSHU directory
 // @author       wm
 // @match        https://www.jianshu.com/p/*
 // @match        http://www.jianshu.com/p/*
-// @require      https://raw.githubusercontent.com/holleworldabc/mini-tools/master/tampermonkey-scripts/jianshu-dir-tree/anime.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/animejs/3.1.0/anime.min.js
 // @grant        none
 // ==/UserScript==
 
