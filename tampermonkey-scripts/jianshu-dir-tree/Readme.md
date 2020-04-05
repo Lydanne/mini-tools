@@ -15,7 +15,7 @@
 
 ## 演示
 
-![GIF](https://user-gold-cdn.xitu.io/2020/4/5/1714a7f39e12a467?w=1228&h=889&f=gif&s=3880514)
+![GIF](Readme.assets/GIF.gif)
 
 ## 安装
 
@@ -27,15 +27,15 @@
 
 打开 **[泼油猴插件网 greasyfork](https://greasyfork.org/zh-CN/scripts/399616-jianshu-dir-tree)** 安装脚本
 
-![微信截图_20200405213621](https://user-gold-cdn.xitu.io/2020/4/5/1714a9393259c258?w=1920&h=950&f=png&s=124400)
+![微信截图_20200405213621](Readme.assets/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20200405213621.png)
 
 安装成功
 
-![image-20200405213921183](https://user-gold-cdn.xitu.io/2020/4/5/1714a93a719bb439?w=1920&h=1051&f=png&s=162369)
+![image-20200405213921183](Readme.assets/image-20200405213921183.png)
 
 打开简书的一篇文章
 
-![image-20200405214022718](https://user-gold-cdn.xitu.io/2020/4/5/1714a93bb17544ba?w=1920&h=950&f=png&s=240912)
+![image-20200405214022718](Readme.assets/image-20200405214022718.png)
 
 成功ok
 
