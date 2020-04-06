@@ -4,17 +4,73 @@
 // @name:en      jianshu-dir-tree
 // @namespace    https://github.com/holleworldabc/mini-tools.git
 // @homepageURL  https://github.com/holleworldabc/mini-tools.git
-// @version      1.0.0
-// @description  简书的目录
+// @version      1.0.2
+// @updateURL    https://greasyfork.org/zh-CN/scripts/399616-jianshu-dir-tree
+// @description  简书目录的完美解决方案
 // @description:en JIANSHU directory
-// @author       wm
-// @match        https://www.jianshu.com/p/*
-// @match        http://www.jianshu.com/p/*
+// @author       WumaCoder
+// @match        *://www.jianshu.com/p/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/animejs/3.1.0/anime.min.js
 // @grant        none
 // ==/UserScript==
 
 (function () {
+  /**
+   * 请求拦截器
+   * @param {Function} callback({status,responseURL}) 回调函数
+   */
+  function responseHander (callback) {
+    const statusText = {
+      'Continue': 100,
+      'Switching Protocols': 101,
+      'OK': 200,
+      'Created': 201,
+      'Accepted': 202,
+      'Non-Authoritative Information': 203,
+      'No Content': 204,
+      'Reset Content': 205,
+      'Partial Content': 206,
+      'Multiple Choices': 300,
+      'Moved Permanently': 301,
+      'Found': 302,
+      'See Other': 303,
+      'Not Modified	': 304,
+      'Use Proxy': 305,
+      'Temporary Redirect': 307,
+      'Bad Request': 400,
+      'Unauthorized': 401,
+      'Payment Required': 402,
+      'Forbidden': 403,
+      'Not Found': 404,
+      'Method Not Allowed': 405,
+      'Not Acceptable	': 406,
+      'Proxy Authentication Required	': 407,
+      'Request Timeout': 408,
+      'Conflict': 409,
+      'Gone': 410,
+      'Length Required': 411,
+      'Precondition Failed': 412,
+      'Request Entity Too Large': 413,
+      'Request-URI Too Long': 414,
+      'Unsupported Media Type': 415,
+      'Requested Range Not Suitable': 416,
+      'Expectation Failed': 417,
+      'Internal Server Error': 500,
+      'Not Implemented': 501,
+      'Bad Gateway': 502,
+      'Service Unavailable': 503,
+      'Gateway Timeout': 504,
+      'HTTP Version Not Supported': 505,
+      'Other': 12029,
+    }
+    Object.defineProperty(XMLHttpRequest.prototype, "status", {
+      get: function () {
+        const status = statusText[this.statusText] || statusText['Other'];
+        callback({ status, responseURL: this.responseURL });
+        return status;
+      },
+    })
+  }
   /**
    * 提取主要信息
    * @param {Element} el 页面元素
@@ -115,6 +171,14 @@
       }
     }
   }
+  // 防抖
+  function debounce (fn, wait) {
+    let timeout = null;
+    return function () {
+      if (timeout !== null) clearTimeout(timeout);
+      timeout = setTimeout(fn, wait);
+    }
+  }
   /**
    * 激活当前标题
    */
@@ -196,19 +260,28 @@
       listItem.innerHTML = `<span style="font-size: 12px;color: #969696;">本篇文章暂无目录</span>`;
       listElement.appendChild(listItem);
     }
+    console.log("============================================");
     console.log("jianshu-dir-tree load ok");
-    console.log("github: https://github.com/holleworldabc/mini-tools/#mini-tools 获取更多脚本");
+    console.log("github: https://github.com/WumaCoder/mini-tools 获取更多脚本");
+    console.log("jianshu-dir-tree version 1.0.2");
+    console.log("============================================");
 
   }
   /**
    * 入口
    */
   function main () {
-    setTimeout(() => {
+    const fun = debounce(() => {
       const hxTags = getHxTags().map(item => parserTag(item));
       window.hxTags = hxTags;
       createDirView(hxTags);
-    }, 1500);
+    }, 100);
+    responseHander(({ responseURL }) => {
+      if (responseURL.indexOf('recommendations') === -1) {
+        return;
+      }
+      fun();
+    });
   }
 
   initEvent();
