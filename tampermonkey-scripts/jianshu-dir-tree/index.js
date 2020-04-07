@@ -2,9 +2,9 @@
 // @name         jianshu-dir-tree
 // @name:zh      简书目录树
 // @name:en      jianshu-dir-tree
-// @namespace    https://github.com/holleworldabc/mini-tools.git
-// @homepageURL  https://github.com/holleworldabc/mini-tools.git
-// @version      1.0.2
+// @namespace    https://github.com/WumaCoder/mini-tools.git
+// @homepageURL  https://github.com/WumaCoder/mini-tools.git
+// @version      1.0.3
 // @updateURL    https://greasyfork.org/zh-CN/scripts/399616-jianshu-dir-tree
 // @description  简书目录的完美解决方案
 // @description:en JIANSHU directory
@@ -12,6 +12,7 @@
 // @match        *://www.jianshu.com/p/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/animejs/3.1.0/anime.min.js
 // @grant        none
+// @license      GPL-3.0-only
 // ==/UserScript==
 
 (function () {
@@ -113,6 +114,7 @@
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
+        word-break: break-all;
       }
       .jianshu-active{
         color:#ec7259;
