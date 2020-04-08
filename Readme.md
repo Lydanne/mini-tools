@@ -8,7 +8,11 @@
 
 > 一个快速查看Git源码的Tampermonkey插件
 
-### [2-简书目录(Tampermonkey)](./tampermonkey-scripts/jianshu-dir-tree/)
+### [2-简书目录树(Tampermonkey)](./tampermonkey-scripts/jianshu-dir-tree/)
+
+> 一个生成简书目录的插件
+
+### [3-简书搜索强化(Tampermonkey)](./tampermonkey-scripts/jianshu-search-pro/)
 
 > 一个生成简书目录的插件
 
