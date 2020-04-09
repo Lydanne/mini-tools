@@ -4,7 +4,7 @@
 // @name:en      jianshu-search-pro
 // @namespace    https://github.com/WumaCoder/mini-tools.git
 // @homepageURL  https://github.com/WumaCoder/mini-tools.git
-// @version      1.0.0
+// @version      1.0.1
 // @description  对简书的搜索功能进行增强，增强搜索收藏的文章，增强搜索喜欢的文章。
 // @description:en Enhance the search function of the short book, enhance the search of favorite articles, enhance the search of favorite articles.
 // @author       WumaCoder
@@ -87,6 +87,17 @@
    * 初始化菜单
    */
   function initMenu () {
+    monkeyMenu.on('清空缓存', function () {
+      restore();
+      alert("请刷新网页");
+    });
+    monkeyMenu.on('更新脚本', function () {
+      window.GM_openInTab('https://greasyfork.org/zh-CN/scripts/400102-%E7%AE%80%E4%B9%A6%E6%90%9C%E7%B4%A2%E5%BC%BA%E5%8C%96', {
+        active: true,
+        insert: true,
+        setParent: true
+      });
+    });
     monkeyMenu.on('关于', function () {
       window.GM_openInTab('https://github.com/WumaCoder/mini-tools', {
         active: true,
@@ -100,10 +111,6 @@
         insert: true,
         setParent: true
       });
-    });
-    monkeyMenu.on('修复(异常)', function () {
-      restore();
-      alert("请刷新网页");
     });
   }
 
@@ -182,16 +189,18 @@
     const res = await $.get(`https://www.jianshu.com/bookmarks`, { page });
     const dom = toDocument(res);
     const aList = dom.querySelectorAll("ul.note-list > li > div > a");
+    let flag = 0;
     for (let i = 0; i < aList.length; i++) {
       const element = aList[i];
       const temp = { href: element.href, title: element.innerText };
       if (window._store.bookmarksList.filter(item => temp.href == item.href).length >= 1) {
-        return 1
+        flag = 1;
+        break;
       }
       window._store.bookmarksList.push(temp);
     }
     GM_setValue('bookmarksList', window._store.bookmarksList);
-    return 0;
+    return flag;
   }
 
   /**
@@ -203,16 +212,18 @@
     const res = await $.get(`https://www.jianshu.com/users/${window._store.userInfo.current_user.slug}/liked_notes?page=${page}`);
     const dom = toDocument(res);
     const aList = dom.querySelectorAll("ul.note-list > li > div > a");
+    let flag = 0;
     for (let i = 0; i < aList.length; i++) {
       const element = aList[i];
       const temp = { href: element.href, title: element.innerText };
       if (window._store.likedList.filter(item => temp.href == item.href).length >= 1) {
-        return 1
+        flag = 1;
+        break;
       }
       window._store.likedList.push(temp);
     }
     GM_setValue('likedList', window._store.likedList);
-    return 0;
+    return flag;
   }
 
   /**
@@ -286,20 +297,21 @@
     initData();
 
     await getUserInfo();
-    await getBookmarksInfo();
+    console.log('***********初始化简书搜索强化*************');
     await getLikedInfo();
-
-    for (let i = Math.ceil(window._store.likedList.length / 9) || 1; i <= Math.ceil(window._store.likedInfo.count / 9); i++) {
+    for (let i = 1; i <= Math.ceil(window._store.likedInfo.count / 9); i++) {
       if (await getLikedList(i)) break;
+      console.log(`加载喜欢的文章中...(${window._store.likedInfo.count}/${window._store.likedList.length})`);
     }
 
     await getBookmarksInfo();
-    for (let i = Math.ceil(window._store.bookmarksList.length / 9) || 1; i <= Math.ceil(window._store.bookmarksInfo.count / 20); i++) {
+    for (let i = 1; i <= Math.ceil(window._store.bookmarksInfo.count / 20); i++) {
       if (await getBookmarksList(i)) break;
+      console.log(`加载收藏的文章中...(${window._store.bookmarksInfo.count}/${window._store.bookmarksList.length})`);
     }
-
-    console.log(window._store);
-
+    console.log('***********加载成功*************');
+    console.log('***********简书搜索强化1.0.1*************');
+    console.log('***********欢迎来Star~~*************');
   }
   main();
   //---------------------
