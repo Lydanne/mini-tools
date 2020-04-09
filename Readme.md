@@ -10,11 +10,11 @@
 
 ### [2-简书目录树(Tampermonkey)](./tampermonkey-scripts/jianshu-dir-tree/)
 
-> 一个生成简书目录的插件
+> 一个生成简书目录的Tampermonkey插件
 
 ### [3-简书搜索强化(Tampermonkey)](./tampermonkey-scripts/jianshu-search-pro/)
 
-> 一个生成简书目录的插件
+> 一个增强简书自带搜索功能的Tampermonkey插件
 
 ## 关于
 
