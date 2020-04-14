@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+
+  class CLI {
+    constructor() {
+      this.cmds = [];
+      this.initStyle();
+      this.initView();
+      this.initEvent();
+    }
+    initStyle() {
+      const style = document.createElement('style');
+      style.innerText = `.cli{
+        position: fixed;
+        top: 0;
+        width: 50vw;
+        margin: 0 25vw;
+      background: #fff;
+      border: 1px solid gainsboro;
+      border-top: 0;
+      padding: 10px;
+      box-shadow: #ddd 0 0 5px 5px;
+      font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      user-select: none;
+    }
+    .cli-top{
+      width: 100%;
+    }
+    .cli-input{
+      display: block;
+      height: 40px;
+      width: 98%;
+      font-size: 25px;
+      padding:0 5px;
+      font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+    .cli-tip{
+      color: grey;
+      margin-top: 5px;
+    }
+    .cli-list{
+      border-top:1px solid #ddd;
+      margin-top: 10px;
+    }
+    .cli-item{
+      font-size: 20px;
+      border-bottom: 1px solid #ddd;
+      padding: 5px 10px;
+    }
+    .cli-item:hover{
+      background-color: #ddd;
+    }
+    .cli-info{
+      font-size: 14px;
+      color: gray;
+    }`;
+      document.body.appendChild(style)
+    }
+    
+    initView() {
+      this.main = document.createElement('DIV');
+      this.main.innerHTML = `
+      <div class="cli">
+        <div class="cli-top">
+          <input class="cli-input" type="text" value=">">
+          </div>
+          <div>
+            </div>
+    <div class="cli-tip">
+      <span>Please press [ESC] to exit, or press [Enter] to execute the command.</span>
+      </div>
+    <div class="cli-list">
+      </div>
+      </div>
+      `
+      document.body.appendChild(this.main);
+      this.list = this.main.querySelector('.cli-list');
+      this.input = this.main.querySelector('.cli-input');
+    }
+    
+    initEvent() {
+      this.input.addEventListener('input', () => {
+        const value = this.input.value;
+        const list = this.matchCmds(value);
+        if(list.length === 1){
+          this.matchCmd = list[0];
+        }
+        this.clearMatchList();
+        this.addItems(list);
+      });
+      this.input.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter'){
+          console.log(this.input.value,this.matchCmd);
+          const cmdStr = this.input.value.substr(1);
+          const matchCmdStr = this.matchCmd.cmd.join(' ');
+          this.matchCmd.callback(cmdStr.replace(matchCmdStr+' ','').split(/ +/igm));
+        }
+      });
+      document.addEventListener('keyup',(e)=>{
+        if(e.key === 'Escape'){
+            this.hide();
+        }
+      });
+      this.input.focus();
+      this.input.setSelectionRange(1,1);
+    }
+    
+    matchCmds(ucmd) {
+      if (!ucmd.match(/>/igm)) {
+        return false;
+      }
+      if (!ucmd.match(/\w/igm)) {
+        return false;
+      }
+      ucmd = ucmd.substr(1);
+      const { cmd } = this.parser(ucmd);
+      const str = cmd.join('');
+      return this.cmds.filter(item => {
+        const str2 = item.cmd.join('');
+        if(str.length > str2.length){
+          return str.match(new RegExp(str2,'igm'))
+        }else {
+          return str2.match(new RegExp(str,'igm'))
+        }
+      })
+    }
+
+    parser(orgCmd) {
+      const tokens = orgCmd.split(/ +/igm);
+      const args = tokens.filter(item => item.match(/^\$\w+/igm));
+      const cmd = tokens.filter(item => item.match(/^\w+/igm));
+      return { tokens, args, cmd };
+    }
+    
+    on(orgCmd, info, callback) {
+      const { cmd, args } = this.parser(orgCmd);
+      const ret = {
+        orgCmd,
+        cmd,
+        args,
+        info,
+        callback
+      };
+      this.cmds.push(ret);
+      if(ret) this.addItems([ret]);
+    }
+    
+    createItem(orgCmd, info) {
+      const div = document.createElement('DIV');
+      div.className = 'cli-item';
+      div.innerHTML = `<div>
+            <span>${orgCmd}</span>
+          </div>
+          <div class="cli-info">
+            <span>${info}
+            </span>
+          </div>`;
+      div.addEventListener('click',()=>{
+        this.input.value = '>' + orgCmd;
+      });
+      return div;
+    }
+    
+    addItems(items = []) {
+      items && items.forEach(item => {
+        this.list.appendChild(this.createItem(item.orgCmd,item.info));
+      });
+    }
+    
+    clearMatchList() {
+      for (let i = this.list.childNodes.length - 1; i >= 0; i--) {
+        const node = this.list.childNodes[i];
+        node.remove();
+      }
+    }
+  
+    show(){
+      this.main.style.display = 'block';
+    }
+
+    hide(){
+      this.main.style.display ='none';
+    }
+  }
+
+    window.onload = function() {
+      const cliUI = new CLI();
+      cliUI.on('config set','配置CONFIG',(args)=>{
+        console.log(args);
+        
+      });
+      cliUI.on('config get','配置CONFIG',()=>{});
+      cliUI.on('config remove','配置CONFIG',()=>{});
+    }
+</script>
+</html>

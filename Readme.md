@@ -16,6 +16,10 @@
 
 > 一个增强简书自带搜索功能的Tampermonkey插件
 
+### [4-DeepL深度翻译器(tampermonkey)](./tampermonkey-scripts/deep-l/)
+
+> 为程序员量身定做的翻译神器
+
 ## 关于
 
 WM/2020.4
