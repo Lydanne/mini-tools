@@ -644,7 +644,7 @@
       initData();
       console.log(config);
     });
-    document.body.addEventListener('click', (e) => {
+    document.body.addEventListener('mouseup', (e) => {
       const path = e.path;
       if (path.length && config.isAuto) {
         for (let i = 0; i < path.length; i++) {
