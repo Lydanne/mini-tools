@@ -4,7 +4,7 @@
 // @name:en      deepL
 // @namespace    https://github.com/WumaCoder/mini-tools.git
 // @homepageURL  https://github.com/WumaCoder/mini-tools.git
-// @version      1.0.1
+// @version      1.0.2
 // @description  基于deepL、google、youdao开发的第三方翻译插件，可以实现页面的智能自动翻译，最有特色的是他可以添加忽略翻译
 // @description:en A third-party translation plugin based on deepL Translations
 // @author       WumaCoder
