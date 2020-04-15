@@ -4,7 +4,7 @@
 // @name:en      deepL
 // @namespace    https://github.com/WumaCoder/mini-tools.git
 // @homepageURL  https://github.com/WumaCoder/mini-tools.git
-// @version      1.0.2
+// @version      1.0.5
 // @description  基于deepL、google、youdao开发的第三方翻译插件，可以实现页面的智能自动翻译，最有特色的是他可以添加忽略翻译
 // @description:en A third-party translation plugin based on deepL Translations
 // @author       WumaCoder
@@ -402,7 +402,7 @@
             Trans.transResult.orig = origs;
             Trans.transResult.origLang = src;
             h_onloadfn();
-          }, 300);
+          }, 500);
         },
         onerror: function (e) {
           console.error(e);
@@ -531,7 +531,11 @@
           '#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.Box.mb-3.Box--condensed',
           '.highlight>pre',
           '#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div',
-          '.gatsby-highlight'
+          '.gatsby-highlight',
+          '.language-typescript',
+          '.language-javascript',
+          '.language-bash',
+          '.language-shell'
         ],
         replaceWork: []
       }
@@ -646,7 +650,7 @@
     });
     document.body.addEventListener('mouseup', (e) => {
       const path = e.path;
-      if (path.length && config.isAuto) {
+      if (path.length && config.isAuto && isFanyi()) {
         for (let i = 0; i < path.length; i++) {
           const item = path[i];
           if (item.nodeName === 'A') {
@@ -778,7 +782,7 @@
             return;
           }
         }
-        if (!node['data-ok'] && maxTextCount > (textCount+node.nodeValue.length)) {
+        if (!node['data-ok'] && ( textCount===0 ||  maxTextCount > (textCount+node.nodeValue.length))) {
           textCount+=node.nodeValue.length;
           nodeList.push(node);
         }
@@ -846,7 +850,7 @@
       str = str.replace(new RegExp(item.match,'gm'), item.value);
     });
     ignoreWork.forEach((item, index) => {
-      str = str.replace(new RegExp(item, 'igm'), '%' + index + '%')
+      str = str.replace(new RegExp(item, 'igm'), '_' + index)
     });
     return str;
   }
@@ -857,9 +861,8 @@
    */
   function reTransformIgnoreWork (str) {
     const { ignoreWork } = config;
-    str = str.replace(/％/gm,'%');
     ignoreWork.forEach((item, index) => {
-      str = str.replace(new RegExp('%' + index + '%', 'gm'), item)
+      str = str.replace(new RegExp('_' + index, 'gm'), item)
     });
     return str;
   }
@@ -894,26 +897,31 @@
   }
 
   async function exec () {
-    nodeList = [];
-    textCount = 0;
-    deepFilterList(document.body);
-    if (nodeList.length === 0) {
-      return false;
-    }
-    let str = transformToString(nodeList);
-    str = transformIgnoreWork(str);
-    Trans.RegisterEngine();
-    Trans.transEngine = config.transEngine;
-    Trans.Update();
-    Trans.transText = str;//'Updating vue-cli-plugin-apollo will also update both Apollo Client and its configuration for you!';
-    await new Promise(resolve => {
-      Trans.Execute(() => {
-        const arr2 = reTransformToString(Trans.transResult.trans);
-        replaceNodeValue(nodeList, arr2);
-        resolve();
+    while (true) {
+      nodeList = [];
+      textCount = 0;
+      deepFilterList(document.body);
+      if (nodeList.length === 0) {
+        break;
+      }
+      let str = transformToString(nodeList);
+      str = transformIgnoreWork(str);
+      Trans.RegisterEngine();
+      Trans.transEngine = config.transEngine;
+      Trans.Update();
+      Trans.transText = str;//'Updating vue-cli-plugin-apollo will also update both Apollo Client and its configuration for you!';
+      await new Promise(resolve => {
+        Trans.Execute(() => {
+          const arr2 = reTransformToString(Trans.transResult.trans);
+          replaceNodeValue(nodeList, arr2);
+          resolve();
+        });
       });
-    });
-    return true;
+      await new Promise(resolve => {
+        setTimeout(resolve, 500);
+      })
+    }
+
   }
 
   function isFanyi () {
@@ -1159,14 +1167,7 @@
     maxTextCount = config.transEngine == 'yd' ? 100 : 1000;
     
     if (config.isAuto && isFanyi()) {
-      let next = true;
-      while (next) {
-        next = await exec();
-        await new Promise(resolve => {
-          setTimeout(resolve, 300);
-        })
-      }
-
+      exec();
     }
     console.log(config)
   }
