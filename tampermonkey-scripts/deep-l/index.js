@@ -507,7 +507,11 @@
         transTargetLang: '中文简体',
         ignoreWork: [
           'Express',
-          'Fastify'
+          'Fastify',
+          'Nest',
+          'node',
+          'angular',
+          'yarn'
         ],
         allowUrl:[
           'github.com',
@@ -592,6 +596,9 @@
       store.save();
     });
     cliUI.on('conf set allowUrl add', '添加允许的自动翻译的URL,格式: conf set allowUrl add <url>', ([v]) => {
+      if(!config.allowUrl){
+        config.allowUrl = [];
+      }
       config.allowUrl.push(v);
       console.log(config.allowUrl);
       store.save();
@@ -836,11 +843,10 @@
   function transformIgnoreWork (str) {
     const { ignoreWork, replaceWork } = config;
     replaceWork.forEach(item => {
-      str = str.replace(item.match, item.value);
+      str = str.replace(new RegExp(item.match,'gm'), item.value);
     });
     ignoreWork.forEach((item, index) => {
-      const reg = new RegExp(item, 'igm');
-      str = str.replace(reg, '_' + index + '_')
+      str = str.replace(new RegExp(item, 'igm'), '%' + index + '%')
     });
     return str;
   }
@@ -851,9 +857,9 @@
    */
   function reTransformIgnoreWork (str) {
     const { ignoreWork } = config;
+    str = str.replace(/％/gm,'%');
     ignoreWork.forEach((item, index) => {
-      const reg = new RegExp('_' + index + '_', 'igm');
-      str = str.replace(reg, item)
+      str = str.replace(new RegExp('%' + index + '%', 'gm'), item)
     });
     return str;
   }
