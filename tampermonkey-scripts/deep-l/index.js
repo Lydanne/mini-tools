@@ -4,7 +4,7 @@
 // @name:en      deepL
 // @namespace    https://github.com/WumaCoder/mini-tools.git
 // @homepageURL  https://github.com/WumaCoder/mini-tools.git
-// @version      1.0.0
+// @version      1.0.1
 // @description  基于deepL、google、youdao开发的第三方翻译插件，可以实现页面的智能自动翻译，最有特色的是他可以添加忽略翻译
 // @description:en A third-party translation plugin based on deepL Translations
 // @author       WumaCoder
@@ -495,6 +495,8 @@
        * transOrigLang:String = '自动'    源语言
        * transTargetLang：String = '中文简体' 目标语言
        * ignoreWork:String[]      忽略的单词
+       * allowUrl:String[]        允许自动翻译的URL
+       * ignoreUrl:String[]       忽略自动翻译的URL（优先）
        * ignoreElement:String[]   忽略的元素（这里填的是定位这个元素的CSS选择器的格式）
        * replaceWork:Object[]     翻译之前替换的单词,Object:{match:RegExp|String,value:String}match是匹配，value是替换的值
        */
@@ -503,7 +505,15 @@
         transEngine: 'ge',
         transOrigLang: '自动',
         transTargetLang: '中文简体',
-        ignoreWork: [],
+        ignoreWork: [
+          'Express',
+          'Fastify'
+        ],
+        allowUrl:[
+          'github.com',
+          'nestjs.com',
+          'apollographql.com'
+        ],
         ignoreUrl: [
           'www.runoob.com',
         ],
@@ -516,7 +526,8 @@
           '.file-navigation',
           '#js-repo-pjax-container > div.container-lg.clearfix.new-discussion-timeline.px-3 > div > div.Box.mb-3.Box--condensed',
           '.highlight>pre',
-          '#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div'
+          '#js-repo-pjax-container > div.pagehead.repohead.hx_repohead.readability-menu.bg-gray-light.pb-0.pt-3 > div',
+          '.gatsby-highlight'
         ],
         replaceWork: []
       }
@@ -558,37 +569,48 @@
       console.log(config.transTargetLang);
       store.save();
     });
-    cliUI.on('conf set ignoreWork add', '添加忽略的单词,格式: conf set ignoreWork add <单词>', ([v]) => {
+    cliUI.on('conf set ignoreWork add', '添加忽略翻译的单词,格式: conf set ignoreWork add <单词>', ([v]) => {
       config.ignoreWork.push(v);
       console.log(config.ignoreWork);
       store.save();
     });
-    cliUI.on('conf set ignoreWork del', '删除忽略的单词,格式: conf set ignoreWork del <单词>', ([v]) => {
+    cliUI.on('conf set ignoreWork del', '删除忽略翻译的单词,格式: conf set ignoreWork del <单词>', ([v]) => {
       const index = config.ignoreWork.findIndex(item => item.match == v);
       config.ignoreWork.splice(index, 1);
       console.log(config.ignoreWork);
       store.save();
     });
-    cliUI.on('conf set ignoreElement add', '添加忽略的元素（这里填的是定位这个元素的CSS选择器的格式）,格式: conf set ignoreElement add <元素选择器>', ([v]) => {
+    cliUI.on('conf set ignoreElement add', '添加忽略翻译的元素（这里填的是定位这个元素的CSS选择器的格式）,格式: conf set ignoreElement add <元素选择器>', ([v]) => {
       config.ignoreElement.push(v);
       console.log(config.ignoreElement);
       store.save();
     });
-    cliUI.on('conf set ignoreElement del', '删除忽略的元素（这里填的是定位这个元素的CSS选择器的格式）,格式: conf set ignoreElement del <元素选择器>', ([v]) => {
+    cliUI.on('conf set ignoreElement del', '删除忽略翻译的元素（这里填的是定位这个元素的CSS选择器的格式）,格式: conf set ignoreElement del <元素选择器>', ([v]) => {
       const index = config.ignoreElement.findIndex(item => item.match == v);
       config.ignoreElement.splice(index, 1);
       console.log(config.ignoreElement);
       store.save();
     });
-    cliUI.on('conf set ignoreUrl add', '添加忽略的翻译的域名,格式: conf set ignoreUrl add <url>', ([v]) => {
-      config.ignoreElement.push(v);
-      console.log(config.ignoreElement);
+    cliUI.on('conf set allowUrl add', '添加允许的自动翻译的URL,格式: conf set allowUrl add <url>', ([v]) => {
+      config.allowUrl.push(v);
+      console.log(config.allowUrl);
       store.save();
     });
-    cliUI.on('conf set ignoreUrl del', '删除忽略翻译的域名,格式: conf set ignoreUrl del <url>', ([v]) => {
-      const index = config.ignoreElement.findIndex(item => item.match == v);
-      config.ignoreElement.splice(index, 1);
-      console.log(config.ignoreElement);
+    cliUI.on('conf set allowUrl del', '删除允许自动翻译的URL,格式: conf set allowUrl del <url>', ([v]) => {
+      const index = config.allowUrl.findIndex(item => item.match == v);
+      config.allowUrl.splice(index, 1);
+      console.log(config.allowUrl);
+      store.save();
+    });
+    cliUI.on('conf set ignoreUrl add', '添加忽略自动翻译的URL,格式: conf set ignoreUrl add <url>', ([v]) => {
+      config.ignoreUrl.push(v);
+      console.log(config.ignoreUrl);
+      store.save();
+    });
+    cliUI.on('conf set ignoreUrl del', '删除忽略自动翻译的URL,格式: conf set ignoreUrl del <url>', ([v]) => {
+      const index = config.ignoreUrl.findIndex(item => item.match == v);
+      config.ignoreUrl.splice(index, 1);
+      console.log(config.ignoreUrl);
       store.save();
     });
     cliUI.on('conf set replaceWork add', '添加翻译之前替换的单词,格式: conf set replaceWork add <匹配单词/替换单词>', ([v]) => {
@@ -737,8 +759,8 @@
    */
   let nodeList = []; //存储有文本的节点
   let _nodeList = [];//这个和上面一样，但是这个不会被清空
-  let num = 0; //计数器
-  let maxNum = 100;
+  let textCount = 0; //计数器
+  let maxTextCount = 100;
   function deepFilterList (node) {
     const { ignoreElement } = config;
     switch (node.nodeName) {
@@ -749,8 +771,8 @@
             return;
           }
         }
-        if (!node['data-ok'] && maxNum > num) {
-          num++;
+        if (!node['data-ok'] && maxTextCount > (textCount+node.nodeValue.length)) {
+          textCount+=node.nodeValue.length;
           nodeList.push(node);
         }
       default:
@@ -867,7 +889,7 @@
 
   async function exec () {
     nodeList = [];
-    num = 0;
+    textCount = 0;
     deepFilterList(document.body);
     if (nodeList.length === 0) {
       return false;
@@ -889,8 +911,17 @@
   }
 
   function isFanyi () {
-    deepFilterList(document.body);
-    return nodeList.length > 50;
+    // deepFilterList(document.body);
+    let f = false;
+    for (let i = 0; i < config.allowUrl.length; i++) {
+      if (window.location.href.match(new RegExp(config.allowUrl[i], 'igm'))) 
+        f=true;
+    }
+    for (let i = 0; i < config.ignoreUrl.length; i++) {
+      if (window.location.href.match(new RegExp(config.ignoreUrl[i], 'igm'))) 
+        f=false;
+    }
+    return f;
   }
   //------------------操作类--------------------------
   /**
@@ -955,6 +986,8 @@
     .cli-list{
       border-top:1px solid #ddd;
       margin-top: 10px;
+      max-height:500px;
+      overflow-y:auto;
     }
     .cli-item{
       font-size: 20px;
@@ -1117,10 +1150,8 @@
     initMenu();
     initView();
     initEvent();
-    maxNum = config.transEngine == 'yd' ? 1 : 100;
-    for (let i = 0; i < config.ignoreUrl.length; i++) {
-      if (window.location.href.match(new RegExp(config.ignoreUrl[i], 'igm'))) return;
-    }
+    maxTextCount = config.transEngine == 'yd' ? 100 : 1000;
+    
     if (config.isAuto && isFanyi()) {
       let next = true;
       while (next) {
