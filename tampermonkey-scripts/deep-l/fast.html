@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    class FloatPart {
+      constructor() {
+        this.initStyle();
+        this.initView();
+      }
+      initStyle() {
+        const style = document.createElement('style');
+        style.innerText = `
+            .fast {
+              position: fixed;
+              width: 100px;
+              height: 60px;
+              background: #F46F52;
+              box-shadow: #ddd 0 0 10px;
+              border: #ddd 1px solid;
+              bottom: -40px;
+              left: 40px;
+              line-height: 50px;
+              text-align: center;
+              border-radius: 10px 10px 0 0;
+              padding-top: 10px;
+              transition: 0.36s all;
+            }
+
+            .fast:hover {
+              bottom: 0px;
+            }
+
+            .fast-button {
+              border: 1px #fff solid;
+              padding: 4px 8px;
+              color: #fff;
+              user-select: none;
+              text-decoration: none;
+            }`;
+        document.body.appendChild(style)
+      }
+
+      initView() {
+        this.main = document.createElement('DIV');
+        this.main.className = 'fast';
+        this.button = document.createElement('A');
+        this.button.className = 'fast-button';
+        this.button.href = 'javascript:void(0)';
+        this.button.innerText = '翻译/切换'
+        this.main.appendChild(this.button)
+        document.body.appendChild(this.main);
+      }
+    }
+
+    const floatPart = new FloatPart();
+
+    floatPart.button.onclick = ()=>{
+    }
+  </script>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 // @name:en      deepL
 // @namespace    https://github.com/WumaCoder/mini-tools.git
 // @homepageURL  https://github.com/WumaCoder/mini-tools.git
-// @version      1.0.5
+// @version      1.0.6
 // @description  基于deepL、google、youdao开发的第三方翻译插件，可以实现页面的智能自动翻译，最有特色的是他可以添加忽略翻译
 // @description:en A third-party translation plugin based on deepL Translations
 // @author       WumaCoder
@@ -553,6 +553,8 @@
     `;
     document.body.appendChild(style);
   }
+
+  let isExec = false;
   /**
    * 初始化事件
    */
@@ -648,6 +650,11 @@
       initData();
       console.log(config);
     });
+    floatPart.button.onclick = () => {
+      if (isExec) switchText();
+      else exec();
+    }
+
     document.body.addEventListener('mouseup', (e) => {
       const path = e.path;
       if (path.length && config.isAuto && isFanyi()) {
@@ -670,13 +677,7 @@
       cliUI.show();
     });
     monkeyMenu.on('翻译页面', async function () {
-      let next = true;
-      while (next) {
-        next = await exec();
-        await new Promise(resolve => {
-          setTimeout(resolve, 300);
-        })
-      }
+      exec();
     });
     monkeyMenu.on('切换原文/翻译', function () {
       switchText();
@@ -704,8 +705,10 @@
     });
   }
   let cliUI = null;
+  let floatPart = null;
   function initView () {
     cliUI = new CLI();
+    floatPart = new FloatPart();
   }
 
   /**
@@ -895,8 +898,13 @@
       item.nodeValue = temp;
     }
   }
-
+  let execing = false;
   async function exec () {
+    if(execing){
+      console.log('翻译中');
+      return;
+    }
+    execing = true;
     while (true) {
       nodeList = [];
       textCount = 0;
@@ -921,7 +929,8 @@
         setTimeout(resolve, 500);
       })
     }
-
+    isExec = true;
+    execing = false;
   }
 
   function isFanyi () {
@@ -1154,7 +1163,56 @@
     }
   }
 
+  class FloatPart {
+    constructor() {
+      this.initStyle();
+      this.initView();
+    }
+    initStyle () {
+      const style = document.createElement('style');
+      style.innerText = `
+            .fast {
+              position: fixed;
+              width: 100px;
+              height: 60px;
+              background: #F46F52;
+              box-shadow: #ddd 0 0 10px;
+              border: #ddd 1px solid;
+              bottom: -40px;
+              left: 40px;
+              line-height: 50px;
+              text-align: center;
+              border-radius: 10px 10px 0 0;
+              padding-top: 10px;
+              transition: 0.36s all;
+              z-index:1000;
+            }
 
+            .fast:hover {
+              bottom: 0px;
+            }
+
+            .fast-button {
+              border: 1px #fff solid;
+              padding: 4px 8px;
+              color: #fff;
+              user-select: none;
+              text-decoration: none;
+            }`;
+      document.body.appendChild(style)
+    }
+
+    initView () {
+      this.main = document.createElement('DIV');
+      this.main.className = 'fast';
+      this.button = document.createElement('A');
+      this.button.className = 'fast-button';
+      this.button.href = 'javascript:void(0)';
+      this.button.innerText = '翻译/切换'
+      this.main.appendChild(this.button)
+      document.body.appendChild(this.main);
+    }
+  }
   /**
    * 入口
    */
