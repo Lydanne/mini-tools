@@ -17,15 +17,21 @@
   btn.className = "btn btn-sm btn-blue";
   btn.innerText = "Source Graph";
   btn.style.marginLeft = '8px';
+  btn.style.height = '32px';
   btn.onclick = function () {
     const url = window.location.href;
     const sourceGraph = 'https://sourcegraph.com/'
     const last = url.split('://')[1];
-    window.open(sourceGraph + last);
+    if(last.indexOf("\/tree\/") != -1){
+      var last2=last.replace('\/tree\/', '@');
+    }else{
+      var last2=last;
+    }
+    window.open(sourceGraph + last2);
   }
   fileNav.appendChild(btn);
   //------------------------------------
-  console.log("load FastGitCode ok!");
-  console.log("version:" + version);
-  console.log("lastUpdateDate:" + updateDate);
+//  console.log("load FastGitCode ok!");
+//  console.log("version:" + version);
+//  console.log("lastUpdateDate:" + updateDate);
 })()
